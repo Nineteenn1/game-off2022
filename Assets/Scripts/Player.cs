@@ -31,8 +31,6 @@ public class Player : MonoBehaviour
 
         gamepad.Game.Jump.performed += ctx => JumpGamepad();
 
-        gamepad.Game.Sprint.performed += ctx => SprintGamepad();
-        gamepad.Game.Sprint.canceled += ctx => SprintCanceledGamepad();
     }
 
     private void OnEnable()
@@ -60,6 +58,7 @@ public class Player : MonoBehaviour
 
         if (jumpPressedRemember > 0.0f && groundedRemember > 0.0f)
         {
+            FindObjectOfType<AudioManager>().Play("PlayerJump");
             jumpPressedRemember = 0.0f;
             groundedRemember = 0.0f;
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
@@ -83,6 +82,7 @@ public class Player : MonoBehaviour
 
         if (jumpPressedRemember > 0.0f && groundedRemember > 0.0f)
         {
+            FindObjectOfType<AudioManager>().Play("PlayerJump");
             jumpPressedRemember = 0.0f;
             groundedRemember = 0.0f;
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
