@@ -16,6 +16,9 @@ public class Ice : MonoBehaviour
         }
 
         if (state == 3)
+        {
+            FindObjectOfType<AudioManager>().Play("IceBreak");
             gameObject.SetActive(false);
+        }
     }
 }

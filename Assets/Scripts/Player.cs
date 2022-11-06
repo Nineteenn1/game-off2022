@@ -4,7 +4,10 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     private float horizontal;
-    private static float speed = 7.7f;
+
+    [SerializeField]
+    public static float defaultSpeed = 7.7f;
+    private static float speed = defaultSpeed;
     private float sprintingSpeed = speed + speed / 2;
 
     public float jumpingPower = 21f;
@@ -18,10 +21,10 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     float jumpPressedRemember = 0.0f;
-    float jumpPressedRememberTime = 0.125f;
+    float jumpPressedRememberTime = 0.15f;
 
     float groundedRemember = 0.0f;
-    float groundedRememberTime = 0.125f;
+    float groundedRememberTime = 0.15f;
 
     public Gamepad gamepad;
 
@@ -98,7 +101,7 @@ public class Player : MonoBehaviour
 
         else
         {
-            speed = 7.7f;
+            speed = defaultSpeed;
         }
     }
 
@@ -109,7 +112,7 @@ public class Player : MonoBehaviour
 
     void SprintCanceledGamepad()
     {
-        speed = 7.7f;
+        speed = defaultSpeed;
     }
 
     void Update()
