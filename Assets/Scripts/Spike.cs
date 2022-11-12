@@ -10,13 +10,6 @@ public class Spike : MonoBehaviour
         {
             FindObjectOfType<AudioManager>().Play("LostGameSfx");
             FindObjectOfType<Player>().ResetToSpawnPosition();
-
-            gameObject.GetComponent<PolygonCollider2D>().enabled = false;
-        }
-
-        if (collision.gameObject.tag == "Ground")
-        {
-            gameObject.GetComponent<PolygonCollider2D>().enabled = false;
         }
     }
 }

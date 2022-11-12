@@ -1657,8 +1657,8 @@ GameObject:
   - component: {fileID: 1399483285}
   - component: {fileID: 1399483290}
   - component: {fileID: 1399483289}
-  - component: {fileID: 1399483288}
   - component: {fileID: 1399483291}
+  - component: {fileID: 1399483292}
   m_Layer: 0
   m_Name: FallingSpike
   m_TagString: Untagged
@@ -1682,18 +1682,6 @@ Transform:
   m_Father: {fileID: 1373657220}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
---- !u!114 &1399483288
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1399483284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8cbb061bcfc19b49af43646af0ebf1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!60 &1399483289
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1813,6 +1801,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 5
+--- !u!114 &1399483292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399483284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c7f17183d224264c9b91c27f287f611, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1505771480
 GameObject:
   m_ObjectHideFlags: 0

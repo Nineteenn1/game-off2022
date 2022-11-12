@@ -4,11 +4,24 @@ using UnityEngine;
 
 public class FallingSpike : MonoBehaviour
 {
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.GetType() == typeof(BoxCollider2D))
+        if (collision.gameObject.tag == "Player")
         {
-            gameObject.transform.GetComponentInParent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            FindObjectOfType<AudioManager>().Play("LostGameSfx");
+            FindObjectOfType<Player>().ResetToSpawnPosition();
+
+            gameObject.GetComponent<PolygonCollider2D>().enabled = false;
         }
+
+        if (collision.gameObject.tag == "Ground")
+        {
+            Physics2D.IgnoreCollision(collision.collider, collision.otherCollider);
+        }
+    }
+
+    private void Start()
+    {
+        
     }
 }
