@@ -12,8 +12,6 @@ public class Player : MonoBehaviour
 
     public float jumpingPower = 21f;
 
-    private bool isFacingRight = true;
-
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private GroundCheck groundChecker;
@@ -21,18 +19,33 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     float jumpPressedRemember = 0.0f;
-    float jumpPressedRememberTime = 0.15f;
+    float jumpPressedRememberTime = 0.5f;
 
     float groundedRemember = 0.0f;
-    float groundedRememberTime = 0.15f;
+    float groundedRememberTime = 0.5f;
+
+    private bool isFacingRight = true;
+
+
+    bool isSprinting = false;
+    bool isJumping = false;
 
     public Gamepad gamepad;
 
+    Vector3 spawnPosition;
+
     private void Awake()
     {
+        spawnPosition = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
+
         gamepad = new Gamepad();
 
-        gamepad.Game.Jump.performed += ctx => JumpGamepad();
+        gamepad.Game.Jump.performed += ctx => Jump();
+        gamepad.Game.Sprint.performed += ctx => Sprint();
+        gamepad.Game.Sprint.canceled += ctx => CancelSprint();
+
+        gamepad.Game.SprintKeyboard.performed += ctx => Sprint();
+        gamepad.Game.SprintKeyboard.canceled += ctx => CancelSprint();
 
     }
 
@@ -46,55 +59,41 @@ public class Player : MonoBehaviour
         gamepad.Game.Disable();
     }
 
-
-    void JumpGamepad()
+    void Jump()
     {
-        jumpPressedRemember -= Time.deltaTime;
-        groundedRemember -= Time.deltaTime;
-        
-
-        if (groundChecker.isGrounded)
-        {
-            jumpPressedRemember = jumpPressedRememberTime;
-            groundedRemember = groundedRememberTime;
-        }
-
-        if (jumpPressedRemember > 0.0f && groundedRemember > 0.0f)
-        {
-            FindObjectOfType<AudioManager>().Play("PlayerJump");
-            jumpPressedRemember = 0.0f;
-            groundedRemember = 0.0f;
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-        }
+        isJumping = true;
     }
 
-    void JumpKeyboard()
+    void Sprint()
     {
+        isSprinting = true;
+    }
+
+    void CancelSprint()
+    {
+        isSprinting = false;
+    }
+
+    void Update()
+    {
+        horizontal = Input.GetAxisRaw("Horizontal");
+
         jumpPressedRemember -= Time.deltaTime;
         groundedRemember -= Time.deltaTime;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            jumpPressedRemember = jumpPressedRememberTime;
+            Jump();
         }
 
-        if (groundChecker.isGrounded)
-        {
-            groundedRemember = groundedRememberTime;
-        }
-
-        if (jumpPressedRemember > 0.0f && groundedRemember > 0.0f)
-        {
-            FindObjectOfType<AudioManager>().Play("PlayerJump");
-            jumpPressedRemember = 0.0f;
-            groundedRemember = 0.0f;
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-        }
+        Flip();
     }
 
-    void SprintKeyboard()
+    private void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+
+        if (isSprinting)
         {
             speed = sprintingSpeed;
         }
@@ -103,31 +102,25 @@ public class Player : MonoBehaviour
         {
             speed = defaultSpeed;
         }
-    }
 
-    void SprintGamepad()
-    {
-        speed = sprintingSpeed;
-    }
+        if (isJumping && groundChecker.isGrounded)
+        {
+            jumpPressedRemember = jumpPressedRememberTime;
+            groundedRemember = groundedRememberTime;
 
-    void SprintCanceledGamepad()
-    {
-        speed = defaultSpeed;
-    }
+            if (jumpPressedRemember > 0.0f && groundedRemember > 0.0f)
+            {
+                FindObjectOfType<AudioManager>().Play("PlayerJump");
+                jumpPressedRemember = 0.0f;
+                groundedRemember = 0.0f;
+                rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            }
+        }
 
-    void Update()
-    {
-        horizontal = Input.GetAxisRaw("Horizontal");
-
-        JumpKeyboard();
-        SprintKeyboard();
-
-        Flip();
-    }
-
-    private void FixedUpdate()
-    {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        else
+        {
+            isJumping = false;
+        }
     }
 
 
@@ -140,5 +133,10 @@ public class Player : MonoBehaviour
             localScale.x *= -1f;
             transform.localScale = localScale;
         }
+    }
+
+    public void ResetToSpawnPosition()
+    {
+        gameObject.transform.position = spawnPosition;
     }
 }

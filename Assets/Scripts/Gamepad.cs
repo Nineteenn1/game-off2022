@@ -44,6 +44,15 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SprintKeyboard"",
+                    ""type"": ""Button"",
+                    ""id"": ""1ae42449-b1a4-48e0-bbab-785cd60da040"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -62,10 +71,21 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""9fa715a7-aef9-4d2c-995f-fcfeae1ff9b0"",
                     ""path"": ""<Gamepad>/leftTrigger"",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""13d6f0d4-831e-4b46-a095-fbae90297872"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SprintKeyboard"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -78,6 +98,7 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
         m_Game = asset.FindActionMap("Game", throwIfNotFound: true);
         m_Game_Jump = m_Game.FindAction("Jump", throwIfNotFound: true);
         m_Game_Sprint = m_Game.FindAction("Sprint", throwIfNotFound: true);
+        m_Game_SprintKeyboard = m_Game.FindAction("SprintKeyboard", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -139,12 +160,14 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
     private IGameActions m_GameActionsCallbackInterface;
     private readonly InputAction m_Game_Jump;
     private readonly InputAction m_Game_Sprint;
+    private readonly InputAction m_Game_SprintKeyboard;
     public struct GameActions
     {
         private @Gamepad m_Wrapper;
         public GameActions(@Gamepad wrapper) { m_Wrapper = wrapper; }
         public InputAction @Jump => m_Wrapper.m_Game_Jump;
         public InputAction @Sprint => m_Wrapper.m_Game_Sprint;
+        public InputAction @SprintKeyboard => m_Wrapper.m_Game_SprintKeyboard;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -160,6 +183,9 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
                 @Sprint.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSprint;
                 @Sprint.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSprint;
                 @Sprint.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSprint;
+                @SprintKeyboard.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSprintKeyboard;
+                @SprintKeyboard.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSprintKeyboard;
+                @SprintKeyboard.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSprintKeyboard;
             }
             m_Wrapper.m_GameActionsCallbackInterface = instance;
             if (instance != null)
@@ -170,6 +196,9 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
                 @Sprint.started += instance.OnSprint;
                 @Sprint.performed += instance.OnSprint;
                 @Sprint.canceled += instance.OnSprint;
+                @SprintKeyboard.started += instance.OnSprintKeyboard;
+                @SprintKeyboard.performed += instance.OnSprintKeyboard;
+                @SprintKeyboard.canceled += instance.OnSprintKeyboard;
             }
         }
     }
@@ -178,5 +207,6 @@ public partial class @Gamepad : IInputActionCollection2, IDisposable
     {
         void OnJump(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnSprintKeyboard(InputAction.CallbackContext context);
     }
 }

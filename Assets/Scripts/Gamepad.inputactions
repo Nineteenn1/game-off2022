@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SprintKeyboard",
+                    "type": "Button",
+                    "id": "1ae42449-b1a4-48e0-bbab-785cd60da040",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -40,10 +49,21 @@
                     "name": "",
                     "id": "9fa715a7-aef9-4d2c-995f-fcfeae1ff9b0",
                     "path": "<Gamepad>/leftTrigger",
-                    "interactions": "Hold",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "",
                     "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "13d6f0d4-831e-4b46-a095-fbae90297872",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SprintKeyboard",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
