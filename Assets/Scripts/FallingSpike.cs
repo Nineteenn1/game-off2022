@@ -16,6 +16,7 @@ public class FallingSpike : MonoBehaviour
 
         if (collision.gameObject.tag == "Ground")
         {
+            FindObjectOfType<AudioManager>().Play("SpikeHit");
             Physics2D.IgnoreCollision(collision.collider, collision.otherCollider);
         }
     }

@@ -3,20 +3,28 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    private float horizontal;
-
-    [SerializeField]
-    public static float defaultSpeed = 7.7f;
-    private static float speed = defaultSpeed;
-    private float sprintingSpeed = speed + speed / 2;
-
-    public float jumpingPower = 21f;
-
-
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private GroundCheck groundChecker;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private WallCheck wallChecker;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private Transform frontCheck;
+
+    [SerializeField] private float wallCheckDistance;
+    [SerializeField] public static float defaultSpeed = 7.7f;
+    [SerializeField] public float wallSlidingSpeed = 2.0f;
+
+
+    private static float speed = defaultSpeed;
+    private float sprintingSpeed = speed + speed / 2;
+
+    public Vector2 checkSize;
+
+    private float horizontal;
+
+    public float jumpingPower = 21f;
 
     float jumpPressedRemember = 0.0f;
     float jumpPressedRememberTime = 0.5f;
@@ -29,6 +37,9 @@ public class Player : MonoBehaviour
 
     bool isSprinting = false;
     bool isJumping = false;
+    bool isTouchingFront;
+    bool isTouchingWall;
+    bool isWallSliding;
 
     public Gamepad gamepad;
 
@@ -132,6 +143,19 @@ public class Player : MonoBehaviour
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;
+        }
+    }
+
+    private void CheckWallSliding()
+    {
+        if (wallChecker.isTouchingAWall && !groundChecker.isGrounded && rb.velocity.y < 0)
+        {
+            wallChecker.isWallSliding = true;
+        }
+
+        else
+        {
+            wallChecker.isWallSliding = false;
         }
     }
 

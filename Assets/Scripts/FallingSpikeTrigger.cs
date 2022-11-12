@@ -6,9 +6,9 @@ public class FallingSpikeTrigger : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetType() == typeof(BoxCollider2D))
+        if (collision.CompareTag("Player"))
         {
-            gameObject.transform.GetComponentInParent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            gameObject.GetComponentInParent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
         }
     }
 }
