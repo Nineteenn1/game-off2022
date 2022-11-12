@@ -20,8 +20,11 @@ public class FallingSpike : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Update()
     {
-        
+        if (gameObject.transform.position.y <= -20)
+        {
+            Destroy(gameObject);
+        }
     }
 }
