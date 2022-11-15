@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform frontCheck;
 
     [SerializeField] private float wallCheckDistance;
-    [SerializeField] public static float defaultSpeed = 7.7f;
+    [SerializeField] public static float defaultSpeed = 8.2f;
     [SerializeField] public float wallSlidingSpeed = 2.0f;
 
 

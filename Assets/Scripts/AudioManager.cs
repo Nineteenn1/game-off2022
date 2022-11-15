@@ -7,6 +7,12 @@ public class AudioManager : MonoBehaviour
     public Sound[] sounds;
 
     // Start is called before the first frame update
+
+    private void Start()
+    {
+        Play("MainMenuSong");
+    }
+
     void Awake()
     {
         foreach (Sound sound in sounds)
