@@ -25,6 +25,8 @@ public class AudioManager : MonoBehaviour
             sound.source.loop = sound.loop;
             sound.source.priority = sound.priority;
         }
+
+        DontDestroyOnLoad(gameObject);
     }
 
  

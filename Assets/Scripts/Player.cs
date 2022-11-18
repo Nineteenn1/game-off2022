@@ -8,11 +8,9 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform wallCheck;
-    [SerializeField] private WallCheck wallChecker;
     [SerializeField] private LayerMask wallLayer;
-    [SerializeField] private Transform frontCheck;
 
-    [SerializeField] private float wallCheckDistance;
+
     [SerializeField] public static float defaultSpeed = 8.2f;
     [SerializeField] public float wallSlidingSpeed = 2.0f;
 
@@ -20,26 +18,32 @@ public class Player : MonoBehaviour
     private static float speed = defaultSpeed;
     private float sprintingSpeed = speed + speed / 2;
 
-    public Vector2 checkSize;
 
     private float horizontal;
 
-    public float jumpingPower = 21f;
+    public static float jumpingPower = 21f;
 
-    float jumpPressedRemember = 0.0f;
-    float jumpPressedRememberTime = 0.5f;
+    private float jumpBufferTime = 0.2f;
+    private float jumpBufferTimeCounter = 0.0f;
 
-    float groundedRemember = 0.0f;
-    float groundedRememberTime = 0.5f;
+    private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter = 0.0f;
 
     private bool isFacingRight = true;
 
 
     bool isSprinting = false;
-    bool isJumping = false;
-    bool isTouchingFront;
-    bool isTouchingWall;
+    public bool isJumping = false;
+
+    bool isWallJumping;
     bool isWallSliding;
+
+    float wallJumpingDirection;
+    float wallJumpingTime;
+    float wallJumpingTimeCounter;
+    float wallJumpingDuration;
+
+    Vector2 wallJumpingPower = new Vector2(defaultSpeed, jumpingPower);
 
     public Gamepad gamepad;
 
@@ -89,20 +93,63 @@ public class Player : MonoBehaviour
     {
         horizontal = Input.GetAxisRaw("Horizontal");
 
-        jumpPressedRemember -= Time.deltaTime;
-        groundedRemember -= Time.deltaTime;
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
 
-        Flip();
+        if (groundChecker.isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        if (isJumping)
+        {
+            jumpBufferTimeCounter = jumpBufferTime;
+        }
+
+        else
+        {
+            jumpBufferTimeCounter -= Time.deltaTime;
+        }
+
+        if (coyoteTimeCounter > 0.0f && jumpBufferTimeCounter > 0.0f)
+        {
+            FindObjectOfType<AudioManager>().Play("PlayerJump");
+
+            jumpBufferTimeCounter = 0.0f;
+            coyoteTimeCounter = 0.0f;
+
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+        }
+     
+
+        else
+        {
+            isJumping = false;
+        }
+
+        WallSlide();
+        WallJump();
+
+        if (!isWallJumping)
+        {
+            Flip();
+        }
+
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        if (!isWallJumping)
+        {
+            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        }
 
         if (isSprinting)
         {
@@ -112,25 +159,6 @@ public class Player : MonoBehaviour
         else
         {
             speed = defaultSpeed;
-        }
-
-        if (isJumping && groundChecker.isGrounded)
-        {
-            jumpPressedRemember = jumpPressedRememberTime;
-            groundedRemember = groundedRememberTime;
-
-            if (jumpPressedRemember > 0.0f && groundedRemember > 0.0f)
-            {
-                FindObjectOfType<AudioManager>().Play("PlayerJump");
-                jumpPressedRemember = 0.0f;
-                groundedRemember = 0.0f;
-                rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            }
-        }
-
-        else
-        {
-            isJumping = false;
         }
     }
 
@@ -146,17 +174,60 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void CheckWallSliding()
+    private bool isWalled()
     {
-        if (wallChecker.isTouchingAWall && !groundChecker.isGrounded && rb.velocity.y < 0)
-        {
-            wallChecker.isWallSliding = true;
-        }
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
 
+    private void WallSlide()
+    {
+        if (isWalled() && !groundChecker.isGrounded /*&& horizontal != 0f*/)
+        {
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.x, -wallSlidingSpeed, float.MaxValue));;
+        }
         else
         {
-            wallChecker.isWallSliding = false;
+            isWallSliding = false;
         }
+    }
+
+    private void WallJump()
+    {
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpingDirection = -transform.localScale.x;
+            wallJumpingTimeCounter = wallJumpingTime;
+
+            CancelInvoke(nameof(StopWallJumping));
+        }
+        else
+        {
+            wallJumpingTimeCounter -= Time.deltaTime;
+        }
+
+        if (isJumping && wallJumpingTimeCounter > 0.0f)
+        {
+            isWallJumping = true;
+            rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            wallJumpingTimeCounter = 0.0f;
+
+            if (transform.localScale.x != wallJumpingDirection)
+            {
+                isFacingRight = !isFacingRight;
+                Vector2 localScale = transform.localScale;
+                localScale.x *= -1f;
+                transform.localScale = localScale;
+            }
+
+            Invoke(nameof(StopWallJumping), wallJumpingDuration);
+        }
+    }
+
+    private void StopWallJumping()
+    {
+        isWallJumping = false;
     }
 
     public void ResetToSpawnPosition()
